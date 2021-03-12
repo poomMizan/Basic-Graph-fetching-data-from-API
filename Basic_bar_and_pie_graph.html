@@ -1,0 +1,119 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.js"></script>
+    <style>
+      .chart_box {
+        display: inline-block;
+        width: 38%;
+        margin-left: 5%;
+        margin-right: 5%;
+      }
+      .chart {  
+        width: 300px;
+        height: 300px;
+      }
+      br {
+          display: none;
+      }
+
+      @media only screen and (max-width: 960px) {
+        .chart_box {
+            display: block;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        br {
+            display: inline;
+        }
+      }
+    </style>
+
+  </head>
+  <body>
+    
+    <div class="chart_box">
+      <canvas id="bar_chart" class="chart" style="height: 300px"></canvas>
+    </div>
+    <br> 
+    <br>
+    <br>
+    <div class="chart_box">
+      <canvas id="pie_chart" class="chart"></canvas>
+    </div>
+  
+  <script>
+
+    $(document).ready(() => {
+        
+        let city_name	= [];
+        let population 	= [];
+        let bar_chart = document.querySelector("#bar_chart").getContext("2d");
+        let pie_chart = document.querySelector("#pie_chart").getContext("2d");
+
+        getData();
+      
+        function getData() {
+
+          $.ajax({
+
+            url: "https://www.trcloud.co/test/api.php", 
+            dataType: "json",
+            success: (result) => {
+          
+              result.forEach( (value) => {
+                city_name.push(value.City);
+                population.push(value.Population);
+              })
+              
+              createChart(bar_chart, "bar", city_name, population);
+              createChart(pie_chart, "pie", city_name, population);
+              
+            },error : () => {
+              console.log("Fail to get data from API");
+            }
+          });
+        }
+
+        function createChart(chart_name, chart_type, label, data) {
+      
+          new Chart(chart_name, {
+            type: chart_type,
+            data: {
+              labels: city_name,
+              datasets: [{
+                label: "Range by Country",
+                data: data,
+                backgroundColor: [
+                  "#ff7ac3", 
+                  "#7ad9ff", 
+                  "#ffa07a", 
+                  "#0e9b49",
+                  "#8b0e9b", 
+                  "orange", 
+                  "pink", 
+                  "blue",
+                  "yellow", 
+                  "lightblue",         
+                ],
+                borderWidth: 3
+              }]
+            },
+            options: {
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero:true
+                  }
+                }]
+              }
+            }
+          });
+        }
+    })    
+
+  </script>
+  
+  </body>
+</html>
